@@ -1,6 +1,13 @@
+Code environment: JAVA 8.
+
+
 A few assumptions:
 
-1) Suppose in the input file 2 the name of passengers are unique (We should use some identifier other than name). That is based on this information we can uniquely identify
-a passenger. So there will not exist two passengers with the same name book the tickets. And the program will not handle this 
-case.
+1) When book a passenger to a flight, suppose that the passenger choose a random seat.
+
+2) Suppose one passenger book the same flight at most once.
+
+3) Suppose we just consider just one type of passengers here.
+
+4) Suppose we use single thread to handle the transaction.
 

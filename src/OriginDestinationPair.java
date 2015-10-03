@@ -3,37 +3,38 @@
  *
  * <p>Pair contains:</p>
  * <ul>
- * <li>Flight origin</li>
- * <li>Flight destination</li>
+ * <li>Flight origin code</li>
+ * <li>Flight destination code</li>
  * </ul>
  */
 
 public class OriginDestinationPair {
     /**
-     * Flight origin.
+     * Flight origin code.
      */
-    private String origin;
+    private final String originCode;
 
     /**
-     * Flight destination.
+     * Flight destination code.
      */
-    private String destination;
+    private final String destinationCode;
 
     /**
      * Constructor.
      * Create OriginDestinationPair instance with flight origin and destination.
      */
-    public OriginDestinationPair(final String origin, final String destination) {
-        if (origin == null || destination == null) {
-            throw new IllegalArgumentException("Flight origin and destination should not be null");
+    public OriginDestinationPair(final String originCode, final String destinationCode) {
+        if (!(validAirportCode(originCode) && validAirportCode(destinationCode))) {
+            throw new IllegalArgumentException("Flight origin and destination are not valid."
+                    + " Valid Origin & Destination are 3 letter airport/city codes");
         }
-        this.origin = origin;
-        this.destination = destination;
+        this.originCode = originCode;
+        this.destinationCode = destinationCode;
     }
 
     /**
      * Valid airport/city code.
-     * Validate rule: Origin & Destination are 3 letter airport/city codes
+     * Validate rule: Origin & Destination are 3 letter airport/city codes.
      * @param code airport/city code.
      * @return true if the airport code fulfill the above validate rule.
      */
@@ -41,16 +42,31 @@ public class OriginDestinationPair {
         if (code == null || code.length() != 3) {
             return false;
         }
+        for (int i = 0; i < code.length(); i++) {
+            if (!isLetter(code.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Check if a character is letter.
+     * If it is a letter, it should belongs to [A,Z] or [a,z].
+     * @param c input character.
+     * @return true if the input is a letter.
+     */
+    private boolean isLetter(final char c) {
+        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
-        int result = 1;
-        result = prime * result
-                + ((destination == null) ? 0 : destination.hashCode());
-        result = prime * result + ((origin == null) ? 0 : origin.hashCode());
-        return result;
+        int hash = 1;
+        hash = prime * hash + this.destinationCode.hashCode();
+        hash = prime * hash + this.originCode.hashCode();
+        return hash;
     }
 
     @Override
@@ -62,16 +78,6 @@ public class OriginDestinationPair {
             return false;
         }
         OriginDestinationPair pair = (OriginDestinationPair) obj;
-        if (destination == null) {
-            if (pair.destination != null)
-                return false;
-        } else if (!destination.equals(pair.destination))
-            return false;
-        if (origin == null) {
-            if (pair.origin != null)
-                return false;
-        } else if (!origin.equals(pair.origin))
-            return false;
-        return true;
+        return this.destinationCode.equals(pair.destinationCode) && this.originCode.equals(pair.originCode);
     }
 }
