@@ -1,0 +1,6 @@
+A few assumptions:
+
+1) Suppose in the input file 2 the name of passengers are unique (We should use some identifier other than name). That is based on this information we can uniquely identify
+a passenger. So there will not exist two passengers with the same name book the tickets. And the program will not handle this 
+case.
+
