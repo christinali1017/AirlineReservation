@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -64,6 +65,7 @@ public class Flight implements Comparable<Flight> {
         this.originCode = builder.originCode;
         this.destinationCode = builder.destinationCode;
         this.reservationMap = new HashMap<>();
+        existSeats = new LinkedList<>();
         for (int i = 1; i <= numberOfSeats; i++) {
             existSeats.add(i);
         }
@@ -199,8 +201,9 @@ public class Flight implements Comparable<Flight> {
                .append(reservationMap.size())
                .append("\n");
         StringBuffer passengerInfoBuffer = new StringBuffer();
-        String format = "%50s %10s %10s";
-        passengerInfoBuffer.append(String.format(format, "Passenger Name", "Seat#", "Price\n"));
+        String format = "%-50s %-10s %-10s";
+        passengerInfoBuffer.append(String.format(format, "Passenger Name", "Seat#", "Price"))
+                           .append("\n");
         int totalAvenue = 0;
         for (Map.Entry<Passenger, ReservationItem> entry : reservationMap.entrySet()) {
             Passenger passenger = entry.getKey();

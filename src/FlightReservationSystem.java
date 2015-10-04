@@ -51,10 +51,12 @@ public class FlightReservationSystem {
      */
     private void initiateFlights() throws FileNotFoundException, IOException {
         flightsMap = new HashMap<>();
+        flightNumberToFlightMap = new HashMap<>();
         try (BufferedReader br = new BufferedReader(new FileReader("./in/inputfile1.txt"))) {
             String line = br.readLine();
             while (line != null) {
-                addFlight(line.split(","));
+                System.out.println(line);
+                addFlight(line.replaceAll("\\s", "").split(","));
                 line = br.readLine();
             }
         }
@@ -104,7 +106,8 @@ public class FlightReservationSystem {
         try (BufferedReader br = new BufferedReader(new FileReader("./in/inputfile2.txt"))) {
             String line = br.readLine();
             while (line != null) {
-                processTransaction(line.split(","));
+                System.out.println(line);
+                processTransaction(line.replaceAll("\\s", "").split(","));
                 line = br.readLine();
             }
         }
