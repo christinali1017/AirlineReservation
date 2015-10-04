@@ -16,6 +16,12 @@ A few assumptions:
    KennethHarris pick "K792" which has the lower price, the second time KennethHarris pick "A792"
    They are two different flights, thus we book two tickets for KennethHarris.
 
+3) Suppose when the following scenario happens:
+   *The passenger booked a flight at price 100
+   *The flight changed price to 80.
+   *The passenger request to book the flight the second time.
+   In this case, the passenger's flight price is still 100, unless it cancel the flight and book again.
+
 3) Suppose we just consider just one type of passengers here.
 
 4) Suppose we use single thread to handle the transaction.

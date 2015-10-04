@@ -116,6 +116,10 @@ public class Flight implements Comparable<Flight> {
      * @param item reservation item.
      */
     public void bookPassenger(final ReservationItem item) {
+        //A passenger can only book a same ticket once.
+        if (reservationMap.containsKey(item.getPassenger())) {
+            return;
+        }
         this.reservationMap.put(item.getPassenger(), item);
     }
 
