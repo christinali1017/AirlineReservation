@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -105,6 +107,42 @@ public class FlightReservationSystem {
                 processTransaction(line.split(","));
                 line = br.readLine();
             }
+        }
+    }
+
+    /**
+     * Create Output.
+     * The output should contains:
+     * <ul>
+     * <li>Summary information of a flight</li>
+     * <li>EOD summary</li>
+     * </ul>
+     *
+     * @throws IOException
+     *              Throws when failed or interrupted I/O operations happens.
+     */
+    public void createOutput() throws IOException {
+        StringBuffer sBuffer = new StringBuffer();
+        int totalSeatsSold = 0;
+        long totalRevenue = 0;
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("./out/output.txt"))) {
+            for (Map.Entry<String, Flight>  entry : flightNumberToFlightMap.entrySet()) {
+                Flight flight = entry.getValue();
+                FlightSummary summary = flight.summaryFlight();
+                sBuffer.append(summary.getSummary())
+                       .append("\n");
+                totalSeatsSold += summary.getSoldSeats();
+                totalRevenue += summary.getTotalAvenue();
+            }
+            sBuffer.append("\n")
+                   .append("System's summary")
+                   .append("\n")
+                   .append("Total seats sold: ")
+                   .append(totalSeatsSold)
+                   .append("\n")
+                   .append("Total revenue: ")
+                   .append(String.valueOf(totalRevenue));
+            bw.write(sBuffer.toString());
         }
     }
 

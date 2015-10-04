@@ -2,6 +2,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 /**
  * Flight.
  *
@@ -151,6 +152,14 @@ public class Flight implements Comparable<Flight> {
     }
 
     /**
+     * Get number of available seats.
+     * @return number of seats available.
+     */
+    public int getAvailableSeats() {
+        return existSeats.size();
+    }
+
+    /**
      * Generate random number.
      * @param max max possible number.
      * @param min possible number.
@@ -177,6 +186,36 @@ public class Flight implements Comparable<Flight> {
         if (reservationMap.get(passenger) != null) {
             reservationMap.remove(passenger);
         }
+    }
+
+    public FlightSummary summaryFlight() {
+        StringBuffer summaryBuffer = new StringBuffer();
+        summaryBuffer.append("Flight# ")
+               .append(flightNumber)
+               .append(" Number of seats available: ")
+               .append(getAvailableSeats())
+               .append("\n")
+               .append("Total seats sold: ")
+               .append(reservationMap.size())
+               .append("\n");
+        StringBuffer passengerInfoBuffer = new StringBuffer();
+        String format = "%50s %10s %10s";
+        passengerInfoBuffer.append(String.format(format, "Passenger Name", "Seat#", "Price\n"));
+        int totalAvenue = 0;
+        for (Map.Entry<Passenger, ReservationItem> entry : reservationMap.entrySet()) {
+            Passenger passenger = entry.getKey();
+            ReservationItem reservationItem = entry.getValue();
+            passengerInfoBuffer.append(String.format(format, passenger.getName(),
+                                                             reservationItem.getSeatNumber(),
+                                                             "$" + reservationItem.getPrice()))
+                               .append("\n");
+            totalAvenue += reservationItem.getPrice();
+        }
+        summaryBuffer.append("Total revenue on this flight: $" + totalAvenue)
+                     .append("\n\n")
+                     .append(passengerInfoBuffer);
+        return new FlightSummary(flightNumber, getAvailableSeats(), reservationMap.size(),
+                                totalAvenue, summaryBuffer.toString());
     }
 
     /**
