@@ -9,6 +9,7 @@
  */
 
 public class OriginDestinationPair {
+
     /**
      * Flight origin code.
      */
@@ -79,5 +80,21 @@ public class OriginDestinationPair {
         }
         OriginDestinationPair pair = (OriginDestinationPair) obj;
         return this.destinationCode.equals(pair.destinationCode) && this.originCode.equals(pair.originCode);
+    }
+
+    /**
+     * Get origin code.
+     * @return origin code.
+     */
+    public String getOriginCode() {
+        return originCode;
+    }
+
+    /**
+     * Get destination code.
+     * @return destination code.
+     */
+    public String getDestinationCode() {
+        return destinationCode;
     }
 }

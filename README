@@ -1,11 +1,20 @@
 Code environment: JAVA 8.
 
+Note:
+Some of the methods or member are marked as "default" access other than private for the reason of
+ unit test and integration test.
+
 
 A few assumptions:
 
 1) When book a passenger to a flight, suppose that the passenger choose a random seat.
 
 2) Suppose one passenger book the same flight at most once.
+   For example, in inputfile2.txt "BookPassenger,MikeSmith,LAS,LAX" appears two times, 
+   but we only book one tickt for MikeSmith for the flight "A124".
+   But for "BookPassenger,KennethHarris,CHI,DFW", since there are two flights, and the first time
+   KennethHarris pick "K792" which has the lower price, the second time KennethHarris pick "A792"
+   They are two different flights, thus we book two tickets for KennethHarris.
 
 3) Suppose we just consider just one type of passengers here.
 

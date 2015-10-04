@@ -24,41 +24,66 @@ public class FlightReservationSystem {
      * FlightsMap, map of <OriginDestinationPair, flights>.
      * For each OriginDestinationPair, we maintain a TreeSet of flight. TreeSet is sorted by flight price.
      */
-    private Map<OriginDestinationPair, TreeSet<Flight>> flightsMap;
+    Map<OriginDestinationPair, TreeSet<Flight>> flightsMap;
 
     /**
      * flight number to flight map.
      */
-    private Map<String, Flight> flightNumberToFlightMap;
+    Map<String, Flight> flightNumberToFlightMap;
 
     /**
      * Constructor.
+     * @param flightInputFilePath flight input file path, in this example
+     *                            we should pass the path of inputfile1.txt.
      * @throws IOException
      *              Throws when failed or interrupted I/O operations happens.
      * @throws FileNotFoundException
      *              Throws when an attempt to open the file denoted by a specified pathname has failed.
      */
-    public FlightReservationSystem() throws FileNotFoundException, IOException {
-        initiateFlights();
+    public FlightReservationSystem(final String flightInputFilePath) throws FileNotFoundException, IOException {
+        initiateFlights(flightInputFilePath);
     }
 
     /**
-     * Initiate flight information based on inputfile1.txt.
+     * Initiate flight information.
+     * @param flightInputFilePath flight input file path, in this example
+     *                            we should pass the path of inputfile1.txt.
      * @throws IOException
      *              Throws when failed or interrupted I/O operations happens.
      * @throws FileNotFoundException
      *              Throws when an attempt to open the file denoted by a specified pathname has failed.
      */
-    private void initiateFlights() throws FileNotFoundException, IOException {
+    void initiateFlights(final String flightInputFilePath) throws FileNotFoundException, IOException {
         flightsMap = new HashMap<>();
         flightNumberToFlightMap = new HashMap<>();
-        try (BufferedReader br = new BufferedReader(new FileReader("./in/inputfile1.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(flightInputFilePath))) {
             String line = br.readLine();
             while (line != null) {
-                System.out.println(line);
                 addFlight(line.replaceAll("\\s", "").split(","));
                 line = br.readLine();
             }
+        }
+        //printFlights();
+    }
+
+    void printFlights() {
+//        System.out.println("flightNumberToFlightMap");
+//        for (Map.Entry<String, Flight> entry : flightNumberToFlightMap.entrySet()) {
+//            Flight value = entry.getValue();
+//            System.out.println(value.getFlightNumber() + " " + value.getNumberOfSeats() + " " + 
+//                    + value.getPricePerSeat() + " " + value.getOriginCode() + " " + value.getDestinationCode());
+//        }
+        System.out.println("\nflightsMap");
+        for (Map.Entry<OriginDestinationPair, TreeSet<Flight>> entry : flightsMap.entrySet()) {
+            OriginDestinationPair key = entry.getKey();
+            TreeSet<Flight> value = entry.getValue();
+            System.out.print(key.getOriginCode() + " " + key.getDestinationCode() + " ");
+            Iterator<Flight> iterator = value.iterator();
+            while (iterator.hasNext()) {
+                Flight flight = iterator.next();
+                System.out.print(flight.getFlightNumber() + "  ");
+            }
+            System.out.println();
         }
     }
 
@@ -102,11 +127,10 @@ public class FlightReservationSystem {
      * @throws FileNotFoundException
      *              Throws when an attempt to open the file denoted by a specified pathname has failed.
      */
-    public void handleTransactions() throws FileNotFoundException, IOException {
-        try (BufferedReader br = new BufferedReader(new FileReader("./in/inputfile2.txt"))) {
+    public void handleTransactions(final String transactionFilePath) throws FileNotFoundException, IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(transactionFilePath))) {
             String line = br.readLine();
             while (line != null) {
-                System.out.println(line);
                 processTransaction(line.replaceAll("\\s", "").split(","));
                 line = br.readLine();
             }
@@ -124,11 +148,11 @@ public class FlightReservationSystem {
      * @throws IOException
      *              Throws when failed or interrupted I/O operations happens.
      */
-    public void createOutput() throws IOException {
+    public void createOutput(final String outputFilePath) throws IOException {
         StringBuffer sBuffer = new StringBuffer();
         int totalSeatsSold = 0;
         long totalRevenue = 0;
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("./out/output.txt"))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFilePath))) {
             for (Map.Entry<String, Flight>  entry : flightNumberToFlightMap.entrySet()) {
                 Flight flight = entry.getValue();
                 FlightSummary summary = flight.summaryFlight();
@@ -143,17 +167,18 @@ public class FlightReservationSystem {
                    .append("Total seats sold: ")
                    .append(totalSeatsSold)
                    .append("\n")
-                   .append("Total revenue: ")
+                   .append("Total revenue: $")
                    .append(String.valueOf(totalRevenue));
             bw.write(sBuffer.toString());
         }
+        //printFlights();
     }
 
     /**
      * Process Transaction.
      * @param transactionInfoArr String[] transaction information.
      */
-    private void processTransaction(final String[] transactionInfoArr) {
+    void processTransaction(final String[] transactionInfoArr) {
         String operation = transactionInfoArr[0];
         if (TransactionTypeEnum.BOOK_PASSENGER.getTransactionType().equals(operation)) {
             processBookPassenger(transactionInfoArr);
@@ -180,7 +205,7 @@ public class FlightReservationSystem {
      * Process cancel passenger transaction.
      * @param transactionInfoArr String[] transaction information.
      */
-    private void processCancelPassenger(final String[] transactionInfoArr) {
+    void processCancelPassenger(final String[] transactionInfoArr) {
         Passenger passenger = new Passenger(transactionInfoArr[1]);
         TreeSet<Flight> flights = getFlightsByOriginDestinationPair(transactionInfoArr);
         if (flights == null) {
@@ -203,21 +228,28 @@ public class FlightReservationSystem {
      * Process change price transaction.
      * @param transactionInfoArr String[] transaction information.
      */
-    private void processChangePrice(final String[] transactionInfoArr) {
+    void processChangePrice(final String[] transactionInfoArr) {
         String flightNumber = transactionInfoArr[1];
         int newPrice = Integer.parseInt(transactionInfoArr[2]);
         Flight flight = flightNumberToFlightMap.get(flightNumber);
         if (flight == null) {
             return;
         }
+        OriginDestinationPair originDestinationPair = new OriginDestinationPair(flight.getOriginCode(),
+                flight.getDestinationCode());
+        TreeSet<Flight> flights = flightsMap.get(originDestinationPair);
+
+        //update flight order in flights TreeSet.
+        flights.remove(flight);
         flight.changePrice(newPrice);
+        flights.add(flight);
     }
 
     /**
      * Process BookPassenger Transaction.
      * @param transactionInfoArr String[] transaction information.
      */
-    private void processBookPassenger(final String[] transactionInfoArr) {
+    void processBookPassenger(final String[] transactionInfoArr) {
         Passenger passenger = new Passenger(transactionInfoArr[1]);
         TreeSet<Flight> flights = getFlightsByOriginDestinationPair(transactionInfoArr);
         if (flights == null) {

@@ -1,6 +1,12 @@
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
+
 /**
  * Unit test for flight class.
  */
@@ -9,7 +15,7 @@ public class FlightTest {
 
     private static final String TEST_FLIGHT_NUMBER = "A124";
 
-    private static final int NUMBER_OF_SEATS = 54;
+    private static final int NUMBER_OF_SEATS = 2;
 
     private static int pricePerSeat = 150;
 
@@ -39,38 +45,42 @@ public class FlightTest {
     @Test
     public void testBookPassenger() {
         flight.bookPassenger(testReservationItem);
-        assert(flight.getAvailableSeats() == NUMBER_OF_SEATS - 1);
+        assertTrue(flight.getAvailableSeats() == NUMBER_OF_SEATS - 1);
         ReservationItem item = flight.getReservationByPassenger(TEST_PASSENGER);
-        assert(item.getPrice() == pricePerSeat);
+        assertTrue(item.getPrice() == pricePerSeat);
+        flight.cancelPassenger(testReservationItem);
     }
 
     @Test
     public void testCancelPassenger() {
+        System.out.println(flight.getAvailableSeats());
+        flight.bookPassenger(testReservationItem);
+        assertNotNull(flight.getReservationByPassenger(TEST_PASSENGER));
         flight.cancelPassenger(testReservationItem);
-        assert(flight.getReservationByPassenger(TEST_PASSENGER) == null);
+        assertNull(flight.getReservationByPassenger(TEST_PASSENGER));
+        System.out.println(flight.getAvailableSeats());
     }
 
     @Test
     public void testChangePrice() {
         flight.bookPassenger(testReservationItem);
         flight.changePrice(100);
-        assert(flight.getPricePerSeat() == 100);
-        assert(flight.getReservationByPassenger(TEST_PASSENGER).getPrice() == pricePerSeat);
+        assertTrue(flight.getPricePerSeat() == 100);
+        assertTrue(flight.getReservationByPassenger(TEST_PASSENGER).getPrice() == pricePerSeat);
+        flight.cancelPassenger(testReservationItem);
     }
 
     @Test
     public void testIsFull() {
-        Flight testFlight = new Flight.FlightBuilder()
-                                      .withFlightNumber(TEST_FLIGHT_NUMBER)
-                                      .withNumberOfSeats(1)
-                                      .withPricePerSeat(pricePerSeat)
-                                      .withOriginCode(ORIGIN_CODE)
-                                      .withDestinationCode(DESTINATION_CODE)
-                                      .build();
-        testFlight.bookPassenger(testReservationItem);
-        assert(testFlight.isFull());
-        testFlight.cancelPassenger(testReservationItem);
-        assert(testFlight.isFull() == false);
+        flight.bookPassenger(testReservationItem);
+        assertFalse(flight.isFull());
+        ReservationItem anotherItem = new ReservationItem(new Passenger("John"), flight.getPricePerSeat(),
+                flight.generateRandomSeatNumber());
+        flight.bookPassenger(anotherItem);
+        assertTrue(flight.isFull());
+        flight.cancelPassenger(testReservationItem);
+        assertFalse(flight.isFull());
+        flight.cancelPassenger(anotherItem);
     }
 
     @Test
@@ -89,38 +99,24 @@ public class FlightTest {
                                   .withOriginCode(ORIGIN_CODE)
                                   .withDestinationCode(DESTINATION_CODE)
                                   .build();
-        assert(objOne.compareTo(objTwo) == -1);
-        assert(objTwo.compareTo(objOne) == 1);
+        assertTrue(objOne.compareTo(objTwo) < 0);
+        assertTrue(objTwo.compareTo(objOne) > 0);
     }
 
     @Test
     public void testGetAvailableSeats() {
-        Flight testFlight = new Flight.FlightBuilder()
-                                      .withFlightNumber(TEST_FLIGHT_NUMBER)
-                                      .withNumberOfSeats(1)
-                                      .withPricePerSeat(pricePerSeat)
-                                      .withOriginCode(ORIGIN_CODE)
-                                      .withDestinationCode(DESTINATION_CODE)
-                                      .build();
-        testFlight.bookPassenger(testReservationItem);
-        assert(testFlight.getAvailableSeats() == 0);
-        testFlight.cancelPassenger(testReservationItem);
-        assert(testFlight.getAvailableSeats() == 1);
+        flight.bookPassenger(testReservationItem);
+        assertTrue(flight.getAvailableSeats() == 1);
+        flight.cancelPassenger(testReservationItem);
+        assertTrue(flight.getAvailableSeats() == 2);
     }
 
     @Test
     public void testRecoverSeat() {
-        Flight testFlight = new Flight.FlightBuilder()
-                                      .withFlightNumber(TEST_FLIGHT_NUMBER)
-                                      .withNumberOfSeats(1)
-                                      .withPricePerSeat(pricePerSeat)
-                                      .withOriginCode(ORIGIN_CODE)
-                                      .withDestinationCode(DESTINATION_CODE)
-                                      .build();
-        testFlight.bookPassenger(testReservationItem);
-        assert(testFlight.getAvailableSeats() == 0);
-        testFlight.recoverSeat(1);
-        assert(testFlight.getAvailableSeats() == 1);
-        assert(testFlight.generateRandomSeatNumber() == 1);
+        flight.bookPassenger(testReservationItem);
+        assertTrue(flight.seatsPool.size() == 1);
+        flight.recoverSeat(testReservationItem.getSeatNumber());
+        assertTrue(flight.seatsPool.size() == 2);
+        flight.cancelPassenger(testReservationItem);
     }
 }

@@ -51,23 +51,23 @@ public class Flight implements Comparable<Flight> {
     /**
      * Seats that have been picked.
      */
-    private List<Integer> existSeats;
+    List<Integer> seatsPool;
 
     /**
      * Private constructor.
      * Initiate flight instance with FlightBuilder.
      * @param builder FlightBuilder instance.
      */
-    private Flight(FlightBuilder builder) {
+    private Flight(final FlightBuilder builder) {
         this.flightNumber = builder.flightNumber;
         this.numberOfSeats = builder.numberOfSeats;
         this.pricePerSeat = builder.pricePerSeat;
         this.originCode = builder.originCode;
         this.destinationCode = builder.destinationCode;
         this.reservationMap = new HashMap<>();
-        existSeats = new LinkedList<>();
+        seatsPool = new LinkedList<>();
         for (int i = 1; i <= numberOfSeats; i++) {
-            existSeats.add(i);
+            seatsPool.add(i);
         }
     }
 
@@ -124,7 +124,7 @@ public class Flight implements Comparable<Flight> {
      * @return true if flight is full.
      */
     public boolean isFull() {
-        return this.reservationMap.size() >= this.numberOfSeats;
+        return reservationMap.size() == numberOfSeats;
     }
 
     /**
@@ -140,8 +140,9 @@ public class Flight implements Comparable<Flight> {
      * @return random picked seat number.
      */
     public int generateRandomSeatNumber() {
-        int randomIndex = generateRandomNumber(0, existSeats.size() - 1);
-        return existSeats.remove(randomIndex);
+        int randomIndex = generateRandomNumber(0, seatsPool.size() - 1);
+        int res = seatsPool.remove(randomIndex);
+        return res;
     }
 
     /**
@@ -150,7 +151,7 @@ public class Flight implements Comparable<Flight> {
      * @param seatNumber canceled flight's seat number.
      */
     public void recoverSeat(final int seatNumber) {
-        existSeats.add(seatNumber);
+        seatsPool.add(seatNumber);
     }
 
     /**
@@ -158,7 +159,7 @@ public class Flight implements Comparable<Flight> {
      * @return number of seats available.
      */
     public int getAvailableSeats() {
-        return existSeats.size();
+        return numberOfSeats - reservationMap.size();
     }
 
     /**
