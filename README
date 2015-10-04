@@ -1,28 +1,93 @@
-Code environment: JAVA 8.
+Instructions on how to compile/run your program.
+1) method 1: Use terminal 
+   * step 1: go to src/
+   * step 2: javac *.java
+   * step 3: java SystemRunner
+   (you can also define your input and output path here)
+2) method 2: Run in eclipse
+   * step 1: create java project
+   * step 2: put files into project
+   * step 3: Right click on SystemRunner.java
+   * step 4: click Run Configurations
+   * step 5: in Arguments put "./in/inputfile1.txt ./in/inputfile2.txt ./out/output.txt"
+   * step 6: click run.
 
-Note:
-Some of the methods or member are marked as "default" access other than private for the reason of
+
+Brief description of implementation.
+1) About coding.
+    * Code environment: JAVA 8.
+]   * Some of the methods or member are marked as "default" access other than private for the reason of
  unit test and integration test.
+ 
+2) A few assumptions:
+
+    * Suppose the price is integer. (Based on the summary example in the pdf file)
+
+    * When book a passenger to a flight, suppose that the passenger choose a random seat.
+
+    * Suppose one passenger book the same flight at most once.
+       For example, in inputfile2.txt "BookPassenger,MikeSmith,LAS,LAX" appears two times, 
+       but we only book one tickt for MikeSmith for the flight "A124".
+       But for "BookPassenger,KennethHarris,CHI,DFW", since there are two flights, and the first time
+       KennethHarris pick "K792" which has the lower price, the second time KennethHarris pick "A792"
+       They are two different flights, thus we book two tickets for KennethHarris.
+
+    * Suppose when the following scenario happens:
+       - The passenger booked a flight at price 100
+       - The flight changed price to 80.
+       - The passenger request to book the flight the second time.
+       In this case, the passenger's flight price is still 100, unless it cancel the flight and book again.
+
+    * Suppose if a passenger booked two flights with the same origin and destination, if the passenger cancel
+      a flight, then we should cancel the most expensive flight for the passenger.
+
+    * Suppose we just consider just one type of passengers here.
+
+    * Suppose we use single thread to handle the transaction.
+
+3) Implementation.
+   * Class, data structure and logic: 
+      - Flight: information about flight, contains flight basic information and reservation.
+               1. Member of the class: 
+                        Flight number, 
+                        Total number of seats in flight,
+                        Price per seat.
+                        Origin code
+                        Destination code
+                        Flight reservation list
+                        Seat pool, stored as LinkedList.
+               2. HashMap<Passenger, ReservationItem> to store all reservation on this flight
+               3. LinkedList<Integer> to store all available seats and generate random seats for reservation.
+               4. Each time there is a BookPassenger happens, a ReservationItem will be created and stored into
+                  this HashMap<Passenger, ReservationItem>. And at the same time we remove the random generated 
+                  seat from LinkedList<Integer> seat pool.
+               5. Each time there is a CancelPassenger happens, we remove ReservationItem from Map and restore the 
+                  seat to LinkedList<Integer> seat pool.
+               6. When changePrice happens, we update the price of the flight.
+
+      - FlightReservationSystem: store all flights information and handle transactions.
+               1. HashMap<OriginDestinationPair, TreeSet<Flight>>, to store all the flights have the same origin and 
+                  destination. Use a TreeSet to keep the order of the flights, it is sorted by the flight price, thus 
+                  it enables us to choose the cheapest flight for the passenger.
+               2. HashMap<String, Flight> flightNumberToFlightMap, enable us to fast get a flight by flight number.
+               3. When process BookPassenger transaction, we first find all flights by origin and destination. Then 
+                  choose a cheapest available flight for passenger.
+               4. When process CancelPassenger, we cancel the most expensive flight for passenger.
+               5. When changePrice, we change the price of the flight and reorder the flights TreeSet. 
+
+      - SystemRunner: entrance of program, to process transactions and create report.
+      - FlightInCSVIndexEnum: Enum of flight's columns index in CSV file. For example, Flight number is at 
+        the first column, thus it's index is 0.
+      - FlightSummary: contains a flight's total avenue, available seats, etc.
+      - OriginDestinationPair: contains Origin and Destination.
+      - Passenger: passenger information, contains passenger name.
+      - ReservationItem: a reservation on a flight, contains passenger, seat number, price.
+      - TransactionTypeEnum: transaction type, contains: book, cancle and change price.
 
 
-A few assumptions:
-
-1) When book a passenger to a flight, suppose that the passenger choose a random seat.
-
-2) Suppose one passenger book the same flight at most once.
-   For example, in inputfile2.txt "BookPassenger,MikeSmith,LAS,LAX" appears two times, 
-   but we only book one tickt for MikeSmith for the flight "A124".
-   But for "BookPassenger,KennethHarris,CHI,DFW", since there are two flights, and the first time
-   KennethHarris pick "K792" which has the lower price, the second time KennethHarris pick "A792"
-   They are two different flights, thus we book two tickets for KennethHarris.
-
-3) Suppose when the following scenario happens:
-   *The passenger booked a flight at price 100
-   *The flight changed price to 80.
-   *The passenger request to book the flight the second time.
-   In this case, the passenger's flight price is still 100, unless it cancel the flight and book again.
-
-3) Suppose we just consider just one type of passengers here.
-
-4) Suppose we use single thread to handle the transaction.
+Personal Information:
+1) Name :        Juan Li
+2) Email :       juanli2014@u.northwestern.edu
+3) Phone Number: 6303408425
+4) School:       Northwestern University.
 
