@@ -193,7 +193,7 @@ public class FlightReservationSystem {
             if (reservation == null) {
                 continue;
             } else {
-                flight.canclePassenger(reservation);
+                flight.cancelPassenger(reservation);
                 flight.recoverSeat(reservation.getSeatNumber());
             }
         }
@@ -232,6 +232,7 @@ public class FlightReservationSystem {
                 ReservationItem reservationItem = new ReservationItem(passenger,
                         flight.getPricePerSeat(), flight.generateRandomSeatNumber());
                 flight.bookPassenger(reservationItem);
+                break;
             }
         }
     }

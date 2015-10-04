@@ -183,7 +183,7 @@ public class Flight implements Comparable<Flight> {
      * Cancel a booking on a flight.
      * @param item reservation item.
      */
-    public void canclePassenger(final ReservationItem item) {
+    public void cancelPassenger(final ReservationItem item) {
         Passenger passenger = item.getPassenger();
         if (reservationMap.get(passenger) != null) {
             reservationMap.remove(passenger);
