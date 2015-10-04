@@ -27,7 +27,7 @@ Brief description of implementation.
 
     * Suppose one passenger book the same flight at most once.
        For example, in inputfile2.txt "BookPassenger,MikeSmith,LAS,LAX" appears two times, 
-       but we only book one tickt for MikeSmith for the flight "A124".
+       but we only book one ticket for MikeSmith for the flight "A124".
        But for "BookPassenger,KennethHarris,CHI,DFW", since there are two flights, and the first time
        KennethHarris pick "K792" which has the lower price, the second time KennethHarris pick "A792"
        They are two different flights, thus we book two tickets for KennethHarris.
@@ -82,12 +82,7 @@ Brief description of implementation.
       - OriginDestinationPair: contains Origin and Destination.
       - Passenger: passenger information, contains passenger name.
       - ReservationItem: a reservation on a flight, contains passenger, seat number, price.
-      - TransactionTypeEnum: transaction type, contains: book, cancle and change price.
+      - TransactionTypeEnum: transaction type, contains: book, cancel and change price.
 
 
-Personal Information:
-1) Name :        Juan Li
-2) Email :       juanli2014@u.northwestern.edu
-3) Phone Number: 6303408425
-4) School:       Northwestern University.
 
