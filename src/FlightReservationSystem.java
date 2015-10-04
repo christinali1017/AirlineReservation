@@ -63,28 +63,6 @@ public class FlightReservationSystem {
                 line = br.readLine();
             }
         }
-        //printFlights();
-    }
-
-    void printFlights() {
-//        System.out.println("flightNumberToFlightMap");
-//        for (Map.Entry<String, Flight> entry : flightNumberToFlightMap.entrySet()) {
-//            Flight value = entry.getValue();
-//            System.out.println(value.getFlightNumber() + " " + value.getNumberOfSeats() + " " + 
-//                    + value.getPricePerSeat() + " " + value.getOriginCode() + " " + value.getDestinationCode());
-//        }
-        System.out.println("\nflightsMap");
-        for (Map.Entry<OriginDestinationPair, TreeSet<Flight>> entry : flightsMap.entrySet()) {
-            OriginDestinationPair key = entry.getKey();
-            TreeSet<Flight> value = entry.getValue();
-            System.out.print(key.getOriginCode() + " " + key.getDestinationCode() + " ");
-            Iterator<Flight> iterator = value.iterator();
-            while (iterator.hasNext()) {
-                Flight flight = iterator.next();
-                System.out.print(flight.getFlightNumber() + "  ");
-            }
-            System.out.println();
-        }
     }
 
     /**
@@ -171,7 +149,6 @@ public class FlightReservationSystem {
                    .append(String.valueOf(totalRevenue));
             bw.write(sBuffer.toString());
         }
-        //printFlights();
     }
 
     /**
@@ -212,15 +189,23 @@ public class FlightReservationSystem {
             return;
         }
         Iterator<Flight> iterator = flights.iterator();
+        TreeSet<Flight> reservedFlights = new TreeSet<>();
         while (iterator.hasNext()) {
             Flight flight = iterator.next();
             ReservationItem reservation = flight.getReservationByPassenger(passenger);
             if (reservation == null) {
                 continue;
             } else {
-                flight.cancelPassenger(reservation);
-                flight.recoverSeat(reservation.getSeatNumber());
+                reservedFlights.add(flight);
             }
+        }
+        if (reservedFlights.size() == 0) {
+            return;
+        } else {
+            Flight mostExpensiveFlight = reservedFlights.last();
+            ReservationItem mostExpensiveReservation = mostExpensiveFlight.getReservationByPassenger(passenger);
+            mostExpensiveFlight.cancelPassenger(mostExpensiveReservation);
+            mostExpensiveFlight.recoverSeat(mostExpensiveReservation.getSeatNumber());
         }
     }
 
