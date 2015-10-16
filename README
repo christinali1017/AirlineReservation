@@ -16,7 +16,7 @@ Instructions on how to compile/run your program.
 Brief description of implementation.
 1) About coding.
     * Code environment: JAVA 8.
-]   * Some of the methods or member are marked as "default" access other than private for the reason of
+    * Some of the methods or member are marked as "default" access other than private for the reason of
  unit test and integration test.
  
 2) A few assumptions:
